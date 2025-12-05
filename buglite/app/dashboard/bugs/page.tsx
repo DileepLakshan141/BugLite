@@ -1,7 +1,8 @@
 "use client";
+
 import HeaderComponent from "@/components/header/Header";
 
-const HomeScreenDashboard = () => {
+const Notifications = () => {
   return (
     <div className="w-full flex flex-col justify-start items-start">
       <HeaderComponent />
@@ -9,4 +10,4 @@ const HomeScreenDashboard = () => {
   );
 };
 
-export default HomeScreenDashboard;
+export default Notifications;

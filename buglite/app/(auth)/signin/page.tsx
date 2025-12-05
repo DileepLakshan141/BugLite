@@ -24,11 +24,13 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { signin } from "@/functions/signin";
 import { useRouter } from "next/navigation";
+import useUserStore from "@/utils/zustand/store";
 import Image from "next/image";
 import Link from "next/link";
 
 const SigninPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
+  const { setUser } = useUserStore();
   const router = useRouter();
 
   const signinForm = useForm<z.infer<typeof signInSchema>>({
@@ -47,6 +49,12 @@ const SigninPage = () => {
       });
       if (response.success) {
         toast.success(response.message || "Login successful!");
+        setUser({
+          id: response.data?.user.id,
+          username: response.data?.user.name,
+          email: response.data?.user.email,
+          image: response.data?.user.image,
+        });
         router.push("/dashboard/home");
       } else {
         toast.error(

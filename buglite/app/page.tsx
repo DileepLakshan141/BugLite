@@ -1,4 +1,5 @@
 import DotGrid from "@/components/DotGrid";
+import HeaderComponent from "@/components/header/Header";
 import Image from "next/image";
 
 export default function Home() {
@@ -18,30 +19,7 @@ export default function Home() {
           returnDuration={1.5}
         />
       </div>
-      {/* floatable header */}
-      <div className="w-full h-15 absolute flex bg-white">
-        <div className="w-full max-w-[1300px] flex justify-between items-center mx-auto">
-          {/* the logo holder */}
-          <div className="w-[200px] h-full flex justify-center items-center pt-1.5">
-            <Image
-              src="/buglite.png"
-              width={150}
-              height={20}
-              alt="blog-lite-logo"
-            />
-          </div>
-          {/* the links holder */}
-          <div className="w-full h-full flex justify-between items-center md:max-w-[400px]">
-            <span className="text-lg font-semibold cursor-pointer">Home</span>
-            <span className="text-lg font-semibold cursor-pointer">
-              About Us
-            </span>
-            <span className="text-lg font-semibold cursor-pointer">
-              Contact Us
-            </span>
-          </div>
-        </div>
-      </div>
+      <HeaderComponent />
     </div>
   );
 }
