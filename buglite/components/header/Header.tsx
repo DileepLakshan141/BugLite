@@ -17,6 +17,9 @@ import { ZUSTAND_USER } from "@/types/zustand_types";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { LogOut, Menu } from "lucide-react";
 import { link_data } from "./links";
+import { authClient } from "@/utils/auth_client";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const HeaderComponent = () => {
   const [loggedUser, setLoggedUser] = useState<ZUSTAND_USER | null>(null);
@@ -27,6 +30,19 @@ const HeaderComponent = () => {
     setIsMounted(true);
     setLoggedUser(getUser());
   }, [isMounted]);
+
+  const router = useRouter();
+
+  const logoutTrigger = async () => {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.replace("/");
+          toast.success("Successfully logged out!");
+        },
+      },
+    });
+  };
 
   return (
     <div className="w-full h-15 absolute flex bg-white">
@@ -101,7 +117,7 @@ const HeaderComponent = () => {
                   );
                 })}
                 <DropdownMenuSeparator></DropdownMenuSeparator>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => logoutTrigger()}>
                   <LogOut />
                   <span className="ml-2 capitalize">Logout</span>
                 </DropdownMenuItem>
