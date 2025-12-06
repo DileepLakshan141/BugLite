@@ -24,7 +24,7 @@ import { toast } from "sonner";
 const HeaderComponent = () => {
   const [loggedUser, setLoggedUser] = useState<ZUSTAND_USER | null>(null);
   const [isMounted, setIsMounted] = useState(false);
-  const { getUser } = useUserStore();
+  const { getUser, clearUser } = useUserStore();
 
   useEffect(() => {
     setIsMounted(true);
@@ -38,6 +38,7 @@ const HeaderComponent = () => {
       fetchOptions: {
         onSuccess: () => {
           router.replace("/");
+          clearUser();
           toast.success("Successfully logged out!");
         },
       },
@@ -65,7 +66,7 @@ const HeaderComponent = () => {
           </span>
         </div>
 
-        {!isMounted ? (
+        {!loggedUser?.username ? (
           <div className="flex justify-center items-center mr-2.5">
             <Link href="/signin">
               <Button className="text-md ml-2.5" size="lg">
@@ -97,9 +98,9 @@ const HeaderComponent = () => {
                   </span>
                 </div>
                 {/* collapse btn */}
-                <Button variant="ghost" size="icon-sm" className="ml-5">
-                  <Menu />
-                </Button>
+                <div className="ml-5 flex items-center justify-center p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer">
+                  <Menu className="h-5 w-5 text-gray-600" />
+                </div>
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-[250px]">
