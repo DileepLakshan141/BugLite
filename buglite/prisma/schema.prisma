@@ -16,6 +16,8 @@ model User {
   updatedAt     DateTime  @updatedAt
   accounts      Account[]
   sessions      Session[]
+  projects      Project[]
+  contributions Contributions[]
 
   @@map("user")
 }
@@ -75,4 +77,29 @@ model Jwks {
   expiresAt  DateTime?
 
   @@map("jwks")
+}
+
+// projects table
+model Project {
+  id String @id @default(uuid())
+  author String
+  name String
+  description String
+  createdAt DateTime @default(now())
+  user User @relation(fields: [author] , references: [id])
+  contributions Contributions[]
+  @@map("project")
+}
+
+// joint version
+model Contributions{
+  id String @id @default(uuid())
+  contributor_id String
+  project_id String
+  state Boolean
+  request_accepted Boolean
+  project Project @relation(fields: [project_id] , references: [id])
+  user User @relation(fields: [contributor_id] , references: [id])
+  @@unique([contributor_id, project_id])
+  @@map("contributions")
 }
