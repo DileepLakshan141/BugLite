@@ -36,8 +36,12 @@ import useUserStore from "@/utils/zustand/store";
 import { projectSchema } from "@/schemas/projects";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
+import { useState } from "react";
+import axios from "axios";
 
 const ProjectsScreenDashboard = () => {
+  const [loading, setLoading] = useState<boolean>(false);
   const { getUser } = useUserStore();
   const user = getUser();
   const projectForm = useForm<z.infer<typeof projectSchema>>({
@@ -48,6 +52,28 @@ const ProjectsScreenDashboard = () => {
       author: user?.id,
     },
   });
+
+  const createProject = async (values: z.infer<typeof projectSchema>) => {
+    try {
+      setLoading(true);
+      const response = await axios.post("/api/projects", {
+        name: values.name,
+        description: values.description,
+        author: values.author,
+      });
+
+      if (response.status == 201) {
+        toast.success(response.data.message);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Project creation failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="w-full flex flex-col justify-start items-start">
@@ -73,7 +99,7 @@ const ProjectsScreenDashboard = () => {
               </DialogHeader>
               <Separator className="my" />
               <Form {...projectForm}>
-                <form>
+                <form onSubmit={projectForm.handleSubmit(createProject)}>
                   {/* project name */}
                   <FormField
                     name="name"
@@ -113,7 +139,9 @@ const ProjectsScreenDashboard = () => {
                     }}
                   />
                   <DialogFooter className="mt-4">
-                    <Button>Create</Button>
+                    <Button type="submit" disabled={loading}>
+                      {loading ? "Processing.." : "Create"}
+                    </Button>
                     <DialogClose asChild>
                       <Button variant="outline">Cancel</Button>
                     </DialogClose>
