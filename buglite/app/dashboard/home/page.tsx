@@ -17,6 +17,7 @@ import {
   FolderGit2,
   FolderKanban,
 } from "lucide-react";
+import Link from "next/link";
 
 const HomeScreenDashboard = () => {
   return (
@@ -42,9 +43,11 @@ const HomeScreenDashboard = () => {
               </EmptyDescription>
             </EmptyHeader>
             <EmptyContent className="flex flex-row wrap-normal items-center justify-center gap-2">
-              <Button>
-                <FolderKanban /> Create Project
-              </Button>
+              <Link href="/dashboard/projects">
+                <Button>
+                  <FolderKanban /> Create Project
+                </Button>
+              </Link>
               <Button>
                 {" "}
                 <FolderGit /> Contribution Requests
