@@ -37,11 +37,13 @@ import { projectSchema } from "@/schemas/projects";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
+import Loader from "@/components/loader/Loader";
 
 const ProjectsScreenDashboard = () => {
   const [loading, setLoading] = useState<boolean>(false);
+  const [fetching, setFetching] = useState<boolean>(false);
   const { getUser } = useUserStore();
   const user = getUser();
   const projectForm = useForm<z.infer<typeof projectSchema>>({
@@ -64,6 +66,8 @@ const ProjectsScreenDashboard = () => {
 
       if (response.status == 201) {
         toast.success(response.data.message);
+        projectForm.reset();
+        projectForm.clearErrors();
       } else {
         toast.error(response.data.message);
       }
@@ -74,6 +78,39 @@ const ProjectsScreenDashboard = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const fetchUserSpecificProjects = async () => {
+      const userId = user?.id;
+      try {
+        setFetching(true);
+        const response = await axios.get(`/api/projects/user/${userId}`);
+        console.log(response);
+
+        if (response.data?.success) {
+          toast.success("User specific projects retrieved!");
+        } else {
+          toast.error(response.data.message);
+        }
+      } catch (error) {
+        toast.error("user specific project fetching failed");
+        console.log(error);
+      } finally {
+        setFetching(false);
+      }
+    };
+    fetchUserSpecificProjects();
+  }, [user?.id]);
+
+  if (fetching) {
+    return (
+      <Loader
+        params={{
+          support_text: "Please wait while we look for your projects!",
+        }}
+      />
+    );
+  }
 
   return (
     <div className="w-full flex flex-col justify-start items-start">
