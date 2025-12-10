@@ -40,10 +40,13 @@ import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Loader from "@/components/loader/Loader";
+import { PROJECT } from "@/types/data_types";
+import ProjectCard from "@/components/project_card/ProjectCard";
 
 const ProjectsScreenDashboard = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [fetching, setFetching] = useState<boolean>(false);
+  const [projects, setProjects] = useState<PROJECT[]>([]);
   const { getUser } = useUserStore();
   const user = getUser();
   const projectForm = useForm<z.infer<typeof projectSchema>>({
@@ -88,6 +91,7 @@ const ProjectsScreenDashboard = () => {
         console.log(response);
 
         if (response.data?.success) {
+          setProjects(response.data.projects);
           toast.success("User specific projects retrieved!");
         } else {
           toast.error(response.data.message);
@@ -196,21 +200,29 @@ const ProjectsScreenDashboard = () => {
         <Separator className="my-3" />
         {/* my projects container */}
         <div className="w-full flex justify-center items-center">
-          <Empty>
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <FolderGit2 />
-              </EmptyMedia>
-              <EmptyTitle>
-                No recently created/contributed projects found!
-              </EmptyTitle>
-              <EmptyDescription>
-                Looks like currently you have no created projects or contributed
-                projects. This section will display the infomation related to
-                your projects once they are created.
-              </EmptyDescription>
-            </EmptyHeader>
-          </Empty>
+          {!fetching && projects.length < 1 ? (
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <FolderGit2 />
+                </EmptyMedia>
+                <EmptyTitle>
+                  No recently created/contributed projects found!
+                </EmptyTitle>
+                <EmptyDescription>
+                  Looks like currently you have no created projects or
+                  contributed projects. This section will display the infomation
+                  related to your projects once they are created.
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          ) : (
+            <div className="w-full mx-4 max-w-[1000px] flex justify-center flex-wrap gap-4">
+              {projects.map((project: PROJECT) => {
+                return <ProjectCard key={project.id} params={{ project }} />;
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>

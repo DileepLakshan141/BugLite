@@ -7,7 +7,7 @@ export async function GET(
 ) {
   try {
     const { userId } = params;
-    const projects = await prisma.project.findFirst({
+    const projects = await prisma.project.findMany({
       where: {
         author: userId,
       },

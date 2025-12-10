@@ -120,3 +120,58 @@
     @apply bg-background text-foreground;
   }
 }
+
+.project-card-pattern {
+  background-color: #e5e5f7;
+  opacity: 0.7;
+  background-image: linear-gradient(
+      30deg,
+      #f79245 12%,
+      transparent 12.5%,
+      transparent 87%,
+      #f79245 87.5%,
+      #f79245
+    ),
+    linear-gradient(
+      150deg,
+      #f79245 12%,
+      transparent 12.5%,
+      transparent 87%,
+      #f79245 87.5%,
+      #f79245
+    ),
+    linear-gradient(
+      30deg,
+      #f79245 12%,
+      transparent 12.5%,
+      transparent 87%,
+      #f79245 87.5%,
+      #f79245
+    ),
+    linear-gradient(
+      150deg,
+      #f79245 12%,
+      transparent 12.5%,
+      transparent 87%,
+      #f79245 87.5%,
+      #f79245
+    ),
+    linear-gradient(
+      60deg,
+      #f7924577 25%,
+      transparent 25.5%,
+      transparent 75%,
+      #f7924577 75%,
+      #f7924577
+    ),
+    linear-gradient(
+      60deg,
+      #f7924577 25%,
+      transparent 25.5%,
+      transparent 75%,
+      #f7924577 75%,
+      #f7924577
+    );
+  background-size: 62px 109px;
+  background-position: 0 0, 0 0, 31px 54px, 31px 54px, 0 0, 31px 54px;
+}
