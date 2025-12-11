@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 import { Clock, Sprout } from "lucide-react";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
+import Link from "next/link";
 
 const ProjectCard = ({ params }: { params: { project: PROJECT } }) => {
   const { project } = params;
@@ -25,9 +26,11 @@ const ProjectCard = ({ params }: { params: { project: PROJECT } }) => {
           </p>
         </div>
         <Separator className="mt-2" />
-        <Button className="w-full mt-3" variant="link">
-          <Sprout /> View Project
-        </Button>
+        <Link href={`/dashboard/projects/${project.id}`}>
+          <Button className="w-full mt-3" variant="link">
+            <Sprout /> View Project
+          </Button>
+        </Link>
       </div>
     </div>
   );
