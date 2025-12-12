@@ -2,10 +2,39 @@
 import HeaderComponent from "@/components/header/Header";
 import Placeholder from "@/components/Placeholder/Placeholder";
 import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { ButtonGroup } from "@/components/ui/button-group";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import { LOGBOOK_FORM } from "@/types/data_types";
 import { Brain, Contact, Feather } from "lucide-react";
 import { use } from "react";
+import { useForm } from "react-hook-form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 const ProjectInformation = ({
   params,
@@ -14,6 +43,17 @@ const ProjectInformation = ({
 }) => {
   const unwrapped = use(params);
   const { projectId } = unwrapped;
+
+  const logbookForm = useForm<LOGBOOK_FORM>({
+    defaultValues: {
+      project_id: projectId,
+      title: "",
+      description: "",
+      category: "",
+      state: "pending",
+    },
+  });
+
   return (
     <div className="w-full flex flex-col justify-start items-start">
       <HeaderComponent />
@@ -21,9 +61,133 @@ const ProjectInformation = ({
         <div className="w-full flex justify-center items-center gap-2 mb-4">
           <ButtonGroup>
             <ButtonGroup>
-              <Button size="lg" variant="outline">
-                New Activity Record
-              </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button size="lg" variant="outline">
+                    New Activity Record
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogTitle>Add New Activity</DialogTitle>
+                  <Separator />
+                  <Form {...logbookForm}>
+                    <form>
+                      {/* project id */}
+                      <FormField
+                        name="project_id"
+                        control={logbookForm.control}
+                        render={({ field }) => {
+                          return (
+                            <FormItem>
+                              <FormLabel>Project ID</FormLabel>
+                              <FormControl>
+                                <Input {...field} value={projectId} disabled />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          );
+                        }}
+                      />
+                      {/* record category */}
+                      <FormField
+                        name="category"
+                        control={logbookForm.control}
+                        render={({ field }) => {
+                          return (
+                            <FormItem className=" my-3">
+                              <FormLabel>Category</FormLabel>
+                              <FormControl>
+                                <Select {...field}>
+                                  <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select a category" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectGroup>
+                                      <SelectLabel>Categories</SelectLabel>
+                                      <SelectItem value="issue">
+                                        Report Issue
+                                      </SelectItem>
+                                      <SelectItem value="bug">
+                                        Report Bug
+                                      </SelectItem>
+                                      <SelectItem value="testing">
+                                        Testing Issue
+                                      </SelectItem>
+                                      <SelectItem value="feature-request">
+                                        Feature Request
+                                      </SelectItem>
+                                      <SelectItem value="refactor">
+                                        Code Refactor
+                                      </SelectItem>
+                                      <SelectItem value="performance">
+                                        Performance Issue
+                                      </SelectItem>
+                                      <SelectItem value="security">
+                                        Security Concern
+                                      </SelectItem>
+                                      <SelectItem value="dependency">
+                                        Dependency Update
+                                      </SelectItem>
+                                      <SelectItem value="architecture">
+                                        Architecture Change
+                                      </SelectItem>
+                                    </SelectGroup>
+                                  </SelectContent>
+                                </Select>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          );
+                        }}
+                      />
+                      {/* record title */}
+                      <FormField
+                        name="title"
+                        control={logbookForm.control}
+                        render={({ field }) => {
+                          return (
+                            <FormItem>
+                              <FormLabel>Record Title</FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="Enter title for the record"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          );
+                        }}
+                      />
+                      {/* record description */}
+                      <FormField
+                        name="description"
+                        control={logbookForm.control}
+                        render={({ field }) => {
+                          return (
+                            <FormItem className="my-3">
+                              <FormLabel>Record Description</FormLabel>
+                              <FormControl>
+                                <Textarea
+                                  {...field}
+                                  placeholder="Add a description for your concern"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          );
+                        }}
+                      />
+                      <DialogFooter className="mt-5">
+                        <Button>Create Record</Button>
+                        <DialogClose asChild>
+                          <Button>Cancel</Button>
+                        </DialogClose>
+                      </DialogFooter>
+                    </form>
+                  </Form>
+                </DialogContent>
+              </Dialog>
               <Button size="lg" variant="outline">
                 Add Collaborator
               </Button>
