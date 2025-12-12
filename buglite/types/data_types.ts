@@ -12,3 +12,9 @@ export type LOGBOOK_FORM = {
   description: string;
   state: string;
 };
+
+export type COLLABORATOR_INVITE = {
+  name: string;
+  email: string;
+  image: string;
+};

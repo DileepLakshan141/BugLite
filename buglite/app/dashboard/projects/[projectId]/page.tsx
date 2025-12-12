@@ -20,7 +20,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { LOGBOOK_FORM } from "@/types/data_types";
+import { COLLABORATOR_INVITE, LOGBOOK_FORM } from "@/types/data_types";
 import { Brain, Contact, Feather, Search, SearchX } from "lucide-react";
 import { use } from "react";
 import { useForm } from "react-hook-form";
@@ -38,7 +38,8 @@ import { Textarea } from "@/components/ui/textarea";
 import Loader from "@/components/loader/Loader";
 import { useState } from "react";
 import { toast } from "sonner";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
+import CollaboratorInvite from "@/components/invite/CollaboratorInvite";
 
 const ProjectInformation = ({
   params,
@@ -49,6 +50,9 @@ const ProjectInformation = ({
   const { projectId } = unwrapped;
   const [searching, setSearching] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
+  const [targetUser, setTargetUser] = useState<COLLABORATOR_INVITE | null>(
+    null
+  );
 
   const searchForCollaborator = async () => {
     try {
@@ -62,12 +66,17 @@ const ProjectInformation = ({
       });
 
       if (response.data.success) {
-        console.log(response.data.response);
+        setTargetUser(response.data.response);
         toast.success(response.data.message);
+      } else {
+        toast.error(response.data.message);
+        setTargetUser(null);
       }
     } catch (error) {
+      const wrapped = error as AxiosError<{ message: string }>;
       console.log(error);
-      toast.error("Search process failed");
+      setTargetUser(null);
+      toast.error(wrapped?.response?.data.message);
     } finally {
       setSearching(false);
     }
@@ -237,8 +246,10 @@ const ProjectInformation = ({
                       <Search /> Search
                     </Button>
                   </div>
-                  <div className="w-full h-[350px] border rounded-lg">
-                    {searching ? (
+                  <div className="w-full h-[350px] border rounded-lg p-3">
+                    {targetUser != null ? (
+                      <CollaboratorInvite params={targetUser} />
+                    ) : searching ? (
                       <Loader
                         params={{
                           support_text: "Searching for contributor",
