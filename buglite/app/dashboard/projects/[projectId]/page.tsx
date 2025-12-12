@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { LOGBOOK_FORM } from "@/types/data_types";
-import { Brain, Contact, Feather } from "lucide-react";
+import { Brain, Contact, Feather, Search, SearchX } from "lucide-react";
 import { use } from "react";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
@@ -188,9 +188,36 @@ const ProjectInformation = ({
                   </Form>
                 </DialogContent>
               </Dialog>
-              <Button size="lg" variant="outline">
-                Add Collaborator
-              </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button size="lg" variant="outline">
+                    Add Collaborator
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogTitle>Add Collaborator</DialogTitle>
+                  <Separator />
+                  <div className="w-full flex gap-2 justify-center items-center mt-1">
+                    <Input
+                      className="w-full"
+                      placeholder="Search user by email"
+                    />
+                    <Button>
+                      <Search /> Search
+                    </Button>
+                  </div>
+                  <div className="w-full h-[350px] border rounded-lg">
+                    <Placeholder
+                      params={{
+                        title: "No Results!",
+                        description:
+                          "The contributor you tried to find is not existing any more! Try a different email!",
+                        Icon: SearchX,
+                      }}
+                    />
+                  </div>
+                </DialogContent>
+              </Dialog>
             </ButtonGroup>
           </ButtonGroup>
         </div>

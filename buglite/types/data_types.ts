@@ -1,5 +1,3 @@
-import { StringDecoder } from "string_decoder";
-
 export type PROJECT = {
   id: string;
   name: string;
