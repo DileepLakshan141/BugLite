@@ -35,6 +35,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import Loader from "@/components/loader/Loader";
+import { useState } from "react";
+import { toast } from "sonner";
+import axios from "axios";
 
 const ProjectInformation = ({
   params,
@@ -43,6 +47,31 @@ const ProjectInformation = ({
 }) => {
   const unwrapped = use(params);
   const { projectId } = unwrapped;
+  const [searching, setSearching] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>("");
+
+  const searchForCollaborator = async () => {
+    try {
+      setSearching(true);
+      if (!email) {
+        toast.error("Valid email address required");
+        return;
+      }
+      const response = await axios.post("/api/contributors/search", {
+        searchEmail: email,
+      });
+
+      if (response.data.success) {
+        console.log(response.data.response);
+        toast.success(response.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Search process failed");
+    } finally {
+      setSearching(false);
+    }
+  };
 
   const logbookForm = useForm<LOGBOOK_FORM>({
     defaultValues: {
@@ -201,20 +230,31 @@ const ProjectInformation = ({
                     <Input
                       className="w-full"
                       placeholder="Search user by email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                     />
-                    <Button>
+                    <Button onClick={() => searchForCollaborator()}>
                       <Search /> Search
                     </Button>
                   </div>
                   <div className="w-full h-[350px] border rounded-lg">
-                    <Placeholder
-                      params={{
-                        title: "No Results!",
-                        description:
-                          "The contributor you tried to find is not existing any more! Try a different email!",
-                        Icon: SearchX,
-                      }}
-                    />
+                    {searching ? (
+                      <Loader
+                        params={{
+                          support_text: "Searching for contributor",
+                          full_h: true,
+                        }}
+                      />
+                    ) : (
+                      <Placeholder
+                        params={{
+                          title: "No Results!",
+                          description:
+                            "The contributor you tried to find is not existing any more! Try a different email!",
+                          Icon: SearchX,
+                        }}
+                      />
+                    )}
                   </div>
                 </DialogContent>
               </Dialog>

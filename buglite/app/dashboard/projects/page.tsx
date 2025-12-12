@@ -111,6 +111,7 @@ const ProjectsScreenDashboard = () => {
       <Loader
         params={{
           support_text: "Please wait while we look for your projects!",
+          full_h: false,
         }}
       />
     );
