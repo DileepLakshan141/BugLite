@@ -14,7 +14,9 @@ export type LOGBOOK_FORM = {
 };
 
 export type COLLABORATOR_INVITE = {
+  id: string;
   name: string;
   email: string;
   image: string;
+  projectId: string;
 };

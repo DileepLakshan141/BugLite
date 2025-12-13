@@ -248,7 +248,9 @@ const ProjectInformation = ({
                   </div>
                   <div className="w-full h-[350px] border rounded-lg p-3">
                     {targetUser != null ? (
-                      <CollaboratorInvite params={targetUser} />
+                      <CollaboratorInvite
+                        params={{ ...targetUser, projectId }}
+                      />
                     ) : searching ? (
                       <Loader
                         params={{
