@@ -20,9 +20,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { COLLABORATOR_INVITE, LOGBOOK_FORM } from "@/types/data_types";
+import {
+  COLLABORATOR,
+  COLLABORATOR_INVITE,
+  LOGBOOK_FORM,
+} from "@/types/data_types";
 import { Brain, Contact, Feather, Search, SearchX } from "lucide-react";
-import { use } from "react";
+import { use, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import {
@@ -40,6 +44,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import axios, { AxiosError } from "axios";
 import CollaboratorInvite from "@/components/invite/CollaboratorInvite";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const ProjectInformation = ({
   params,
@@ -49,7 +54,10 @@ const ProjectInformation = ({
   const unwrapped = use(params);
   const { projectId } = unwrapped;
   const [searching, setSearching] = useState<boolean>(false);
+  const [fetchingContributors, setFetchingContributors] =
+    useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
+  const [collaborators, setCollaborators] = useState<COLLABORATOR[]>([]);
   const [targetUser, setTargetUser] = useState<COLLABORATOR_INVITE | null>(
     null
   );
@@ -91,6 +99,34 @@ const ProjectInformation = ({
       state: "pending",
     },
   });
+
+  const getCollaborators = async () => {
+    try {
+      setFetchingContributors(true);
+      const response = await axios.get(
+        `/api/projects/contributors/${projectId}`
+      );
+      console.log(response);
+
+      if (response.data.success) {
+        setCollaborators(response.data.contributors);
+        toast.success(response.data.message);
+      } else {
+        setCollaborators([]);
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      setCollaborators([]);
+      const wrapper = error as AxiosError<{ message: string }>;
+      toast.error(wrapper.response?.data.message);
+    } finally {
+      setFetchingContributors(false);
+    }
+  };
+
+  useEffect(() => {
+    getCollaborators();
+  }, [projectId]);
 
   return (
     <div className="w-full flex flex-col justify-start items-start">
@@ -292,14 +328,25 @@ const ProjectInformation = ({
           <div className="p-2 flex flex-col justify-center items-start w-full border rounded-lg h-[350px] md:col-start-2 max-w-[450px]">
             <h1 className="text-xl font-semibold ml-4">Collaborators</h1>
             <Separator className="my-2" />
-            <Placeholder
-              params={{
-                title: "No Collaborators!",
-                description:
-                  "This project currently does not have any collaborators. Try to add some and get start the working!",
-                Icon: Contact,
-              }}
-            />
+            {fetchingContributors ? (
+              <Loader
+                params={{
+                  full_h: true,
+                  support_text: "Fetching contributor details! Please wait!",
+                }}
+              />
+            ) : !collaborators || collaborators?.length < 1 ? (
+              <Placeholder
+                params={{
+                  title: "No Collaborators!",
+                  description:
+                    "This project currently does not have any collaborators. Try to add some and get start the working!",
+                  Icon: Contact,
+                }}
+              />
+            ) : (
+              <ScrollArea className="w-full h-full"></ScrollArea>
+            )}
           </div>
           {/* project insights and infomation */}
           <div className="p-2 flex flex-col justify-center items-start w-full border rounded-lg h-[350px] md:col-start-2 max-w-[450px]">

@@ -20,3 +20,20 @@ export type COLLABORATOR_INVITE = {
   image: string;
   projectId: string;
 };
+
+export type COLLABORATOR = {
+  id: string;
+  contributor_id: string;
+  project_id: string;
+  state: boolean;
+  request_accepted: boolean;
+  user: COLLABORATOR_DETAILS;
+};
+
+export type COLLABORATOR_DETAILS = {
+  id: string;
+  name: string;
+  email: string;
+  emailVerified: boolean;
+  image: string;
+};
