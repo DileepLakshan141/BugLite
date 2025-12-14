@@ -8,10 +8,10 @@ const ContributorCard = ({ params }: { params: COLLABORATOR }) => {
   const { user, request_accepted } = params;
 
   return (
-    <div className="w-full border rounded-lg h-[90px] flex justify-between items-center p-2">
+    <div className="w-full border rounded-lg h-[60px] flex justify-between items-center p-2">
       {/* avatar container */}
       <div className="w-auto flex justify-center items-center gap-5">
-        <Avatar className="size-11">
+        <Avatar className="size-10">
           <AvatarImage src={user.image} />
           <AvatarFallback className="text-lg font-semibold">
             {user.name.slice(0, 2).toUpperCase()}
@@ -19,11 +19,11 @@ const ContributorCard = ({ params }: { params: COLLABORATOR }) => {
         </Avatar>
 
         <div className="flex flex-col justify-start items-start">
-          <h3 className="text-lg font-semibold">{user.name}</h3>
-          <p className="text-md text-muted-foreground">{user.email}</p>
+          <h3 className="text-md font-semibold">{user.name}</h3>
+          <p className="text-sm text-muted-foreground">{user.email}</p>
         </div>
       </div>
-      <Badge>
+      <Badge variant="secondary" className="bg-amber-600 text-white">
         <BadgeCheck /> {request_accepted ? "Accepted" : "Pending"}
       </Badge>
     </div>

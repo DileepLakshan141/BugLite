@@ -45,6 +45,7 @@ import { toast } from "sonner";
 import axios, { AxiosError } from "axios";
 import CollaboratorInvite from "@/components/invite/CollaboratorInvite";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import ContributorCard from "@/components/contributor/ContributorCard";
 
 const ProjectInformation = ({
   params,
@@ -345,7 +346,11 @@ const ProjectInformation = ({
                 }}
               />
             ) : (
-              <ScrollArea className="w-full h-full"></ScrollArea>
+              <ScrollArea className="w-full h-full">
+                {collaborators.map((user) => {
+                  return <ContributorCard key={user.id} params={user} />;
+                })}
+              </ScrollArea>
             )}
           </div>
           {/* project insights and infomation */}
