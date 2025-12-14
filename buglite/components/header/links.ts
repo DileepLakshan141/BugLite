@@ -1,5 +1,12 @@
 import { LINK } from "@/types/link_types";
-import { BellDot, Bug, FolderGit, LayoutDashboard } from "lucide-react";
+import {
+  BellDot,
+  Bug,
+  FolderGit,
+  Handshake,
+  LayoutDashboard,
+  Mail,
+} from "lucide-react";
 
 export const link_data: LINK[] = [
   {
@@ -11,6 +18,16 @@ export const link_data: LINK[] = [
     name: "My Projects",
     link: "/dashboard/projects",
     icon: FolderGit,
+  },
+  {
+    name: "My Contributions",
+    link: "/dashboard/contributions",
+    icon: Handshake,
+  },
+  {
+    name: "My Invitations",
+    link: "/dashboard/invitations",
+    icon: Mail,
   },
   {
     name: "Bug Details",
