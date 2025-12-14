@@ -38,14 +38,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { z } from "zod";
+import { logbook_schema } from "@/schemas/logbook";
 import { Textarea } from "@/components/ui/textarea";
-import Loader from "@/components/loader/Loader";
 import { useState } from "react";
 import { toast } from "sonner";
 import axios, { AxiosError } from "axios";
-import CollaboratorInvite from "@/components/invite/CollaboratorInvite";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import useUserStore from "@/utils/zustand/store";
+import Loader from "@/components/loader/Loader";
+import CollaboratorInvite from "@/components/invite/CollaboratorInvite";
 import ContributorCard from "@/components/contributor/ContributorCard";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const ProjectInformation = ({
   params,
@@ -57,11 +61,15 @@ const ProjectInformation = ({
   const [searching, setSearching] = useState<boolean>(false);
   const [fetchingContributors, setFetchingContributors] =
     useState<boolean>(false);
+  const [recordCreating, setRecordCreating] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
   const [collaborators, setCollaborators] = useState<COLLABORATOR[]>([]);
   const [targetUser, setTargetUser] = useState<COLLABORATOR_INVITE | null>(
     null
   );
+
+  const { getUser } = useUserStore();
+  const curr_user = getUser();
 
   const searchForCollaborator = async () => {
     try {
@@ -91,15 +99,52 @@ const ProjectInformation = ({
     }
   };
 
-  const logbookForm = useForm<LOGBOOK_FORM>({
+  const logbookForm = useForm<z.infer<typeof logbook_schema>>({
+    resolver: zodResolver(logbook_schema),
     defaultValues: {
       project_id: projectId,
+      user_id: curr_user?.id,
       title: "",
       description: "",
-      category: "",
+      category: "issue",
       state: "pending",
     },
   });
+
+  const createLogbookRecord = async (
+    values: z.infer<typeof logbook_schema>
+  ) => {
+    try {
+      setRecordCreating(true);
+      const { project_id, user_id, title, description, category, state } =
+        values;
+      const validity_check = logbook_schema.safeParse(values);
+      if (!validity_check.success) {
+        return;
+      }
+      const response = await axios.post(`/api/projects/logbook/${projectId}`, {
+        project_id,
+        user_id,
+        title,
+        description,
+        category,
+        state,
+      });
+
+      if (response.data.success) {
+        toast.success(response.data.message);
+        logbookForm.reset();
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      const wrapper = error as AxiosError<{ message: string }>;
+      toast.error(wrapper.response?.data.message);
+    } finally {
+      setRecordCreating(false);
+    }
+  };
 
   const getCollaborators = async () => {
     try {
@@ -111,7 +156,6 @@ const ProjectInformation = ({
 
       if (response.data.success) {
         setCollaborators(response.data.contributors);
-        toast.success(response.data.message);
       } else {
         setCollaborators([]);
         toast.error(response.data.message);
@@ -146,7 +190,9 @@ const ProjectInformation = ({
                   <DialogTitle>Add New Activity</DialogTitle>
                   <Separator />
                   <Form {...logbookForm}>
-                    <form>
+                    <form
+                      onSubmit={logbookForm.handleSubmit(createLogbookRecord)}
+                    >
                       {/* project id */}
                       <FormField
                         name="project_id"
@@ -254,7 +300,9 @@ const ProjectInformation = ({
                         }}
                       />
                       <DialogFooter className="mt-5">
-                        <Button>Create Record</Button>
+                        <Button type="submit">
+                          {recordCreating ? "Creating..." : "Create Record"}
+                        </Button>
                         <DialogClose asChild>
                           <Button>Cancel</Button>
                         </DialogClose>
