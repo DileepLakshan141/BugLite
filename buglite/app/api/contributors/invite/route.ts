@@ -14,6 +14,20 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const duplicate = await prisma.contributions.findFirst({
+      where: {
+        contributor_id: userId,
+        project_id: projectId,
+      },
+    });
+
+    if (duplicate) {
+      return NextResponse.json(
+        { success: false, message: "Invite already been sent to the user!" },
+        { status: 403 }
+      );
+    }
+
     const record = await prisma.contributions.create({
       data: {
         contributor_id: userId,
