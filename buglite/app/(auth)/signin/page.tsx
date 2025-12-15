@@ -43,6 +43,7 @@ const SigninPage = () => {
 
   const signInSubmission = async (values: z.infer<typeof signInSchema>) => {
     try {
+      setLoading(true);
       const response = await signin({
         email: values.email,
         password: values.password,

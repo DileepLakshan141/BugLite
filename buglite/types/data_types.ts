@@ -47,3 +47,16 @@ export type LOGBOOK_RECORD = {
   state: string;
   user: COLLABORATOR_DETAILS;
 };
+
+export type LOGBOOK_SUMMARY = {
+  issuesCount: number;
+  testingCount: number;
+  bugCount: number;
+  securityCount: number;
+  featureRequestCount: number;
+  refactorCount: number;
+  performanceCount: number;
+  architectureCount: number;
+  pendingIssues: number;
+  closedIssues: number;
+};

@@ -24,8 +24,25 @@ import {
   COLLABORATOR,
   COLLABORATOR_INVITE,
   LOGBOOK_RECORD,
+  LOGBOOK_SUMMARY,
 } from "@/types/data_types";
-import { Brain, Contact, Feather, Search, SearchX } from "lucide-react";
+import {
+  Brain,
+  BrushCleaning,
+  Bug,
+  CheckCheck,
+  Contact,
+  DiamondPlus,
+  Feather,
+  FolderCode,
+  Gauge,
+  LayoutGrid,
+  Search,
+  SearchX,
+  ShieldAlert,
+  TestTubeDiagonal,
+  TriangleAlert,
+} from "lucide-react";
 import { use, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
@@ -51,6 +68,7 @@ import CollaboratorInvite from "@/components/invite/CollaboratorInvite";
 import ContributorCard from "@/components/contributor/ContributorCard";
 import { zodResolver } from "@hookform/resolvers/zod";
 import LogRecord from "@/components/log_record/LogRecord";
+import { Badge } from "@/components/ui/badge";
 
 const ProjectInformation = ({
   params,
@@ -66,6 +84,9 @@ const ProjectInformation = ({
     useState<boolean>(false);
   const [recordCreating, setRecordCreating] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
+  const [logbookSummary, setLogbookSummary] = useState<LOGBOOK_SUMMARY | null>(
+    null
+  );
   const [collaborators, setCollaborators] = useState<COLLABORATOR[]>([]);
   const [targetUser, setTargetUser] = useState<COLLABORATOR_INVITE | null>(
     null
@@ -102,20 +123,93 @@ const ProjectInformation = ({
     }
   };
 
+  const insightsCalculator = (data: LOGBOOK_RECORD[]) => {
+    let testingCount = 0;
+    let issuesCount = 0;
+    let bugCount = 0;
+    let securityCount = 0;
+    let featureRequestCount = 0;
+    let refactorCount = 0;
+    let performanceCount = 0;
+    let architectureCount = 0;
+    let pendingIssues = 0;
+    let closedIssues = 0;
+
+    data.forEach((item) => {
+      if (item.state === "pending") {
+        pendingIssues++;
+      } else {
+        closedIssues++;
+      }
+      switch (item.category) {
+        case "testing":
+          testingCount++;
+          break;
+        case "issue":
+          issuesCount++;
+          break;
+        case "bug":
+          bugCount++;
+          break;
+        case "feature-request":
+          featureRequestCount++;
+          break;
+        case "refactor":
+          refactorCount++;
+          break;
+        case "security":
+          securityCount++;
+          break;
+        case "performance":
+          performanceCount++;
+          break;
+        case "architecture":
+          architectureCount++;
+          break;
+      }
+    });
+    console.log({
+      issuesCount,
+      testingCount,
+      bugCount,
+      securityCount,
+      featureRequestCount,
+      refactorCount,
+      performanceCount,
+      architectureCount,
+      pendingIssues,
+      closedIssues,
+    });
+    return {
+      issuesCount,
+      testingCount,
+      bugCount,
+      securityCount,
+      featureRequestCount,
+      refactorCount,
+      performanceCount,
+      architectureCount,
+      pendingIssues,
+      closedIssues,
+    };
+  };
+
   const getLogbookRecords = async () => {
     try {
       setFetchingRecords(true);
       const response = await axios.get(`/api/projects/logbook/${projectId}`);
       if (response.data.success) {
         setLogBookRecords(response.data.logbook_records);
-        console.log(response.data);
+        setLogbookSummary(insightsCalculator(response.data.logbook_records));
       } else {
         setLogBookRecords([]);
         toast.error(response.data.message);
       }
     } catch (error) {
       const wrapper = error as AxiosError<{ message: string }>;
-      toast.error(wrapper.response?.data.message);
+      toast.error(
+        wrapper.response?.data.message || "Error while insights analyzing"
+      );
       setLogBookRecords([]);
     } finally {
       setFetchingRecords(false);
@@ -450,14 +544,125 @@ const ProjectInformation = ({
           <div className="p-2 flex flex-col justify-center items-start w-full border rounded-lg h-[350px] md:col-start-2 max-w-[450px]">
             <h1 className="text-xl font-semibold ml-4">Project Insights</h1>
             <Separator className="my-2" />
-            <Placeholder
-              params={{
-                title: "No Insights Yet!",
-                description:
-                  "This project is not yet have enough activity log records to display the project insights. This section will be available once you work with the project.",
-                Icon: Brain,
-              }}
-            />
+            {fetchingRecords ? (
+              <Loader
+                params={{
+                  support_text: "Please wait while we analyze logbook summary!",
+                  full_h: true,
+                }}
+              />
+            ) : logbookSummary == null ? (
+              <Placeholder
+                params={{
+                  title: "No Insights Yet!",
+                  description:
+                    "This project is not yet have enough activity log records to display the project insights. This section will be available once you work with the project.",
+                  Icon: Brain,
+                }}
+              />
+            ) : (
+              <ScrollArea className="w-full h-[290px] pr-5">
+                <section className="flex justify-between items-center p-2">
+                  <div className="flex items-center gap-1">
+                    <DiamondPlus className="text-red-500 size-5" />
+                    <p className="ml-2 text-muted-foreground font-semibold">
+                      Pending Records
+                    </p>
+                  </div>
+                  <Badge>{logbookSummary.pendingIssues}</Badge>
+                </section>
+                <Separator />
+                <section className="flex justify-between items-center p-2">
+                  <div className="flex items-center gap-1">
+                    <CheckCheck className="text-green-500 size-5" />
+                    <p className="ml-2 text-muted-foreground font-semibold">
+                      Closed Records
+                    </p>
+                  </div>
+                  <Badge>{logbookSummary.closedIssues}</Badge>
+                </section>
+                <Separator />
+                <section className="flex justify-between items-center p-2">
+                  <div className="flex items-center gap-1">
+                    <TriangleAlert className="text-gray-400 size-5" />
+                    <p className="ml-2 text-muted-foreground font-semibold">
+                      Issue Records Count
+                    </p>
+                  </div>
+                  <Badge>{logbookSummary.issuesCount}</Badge>
+                </section>
+                <Separator />
+                <section className="flex justify-between items-center p-2">
+                  <div className="flex items-center gap-1">
+                    <Bug className="text-gray-400 size-5" />
+                    <p className="ml-2 text-muted-foreground font-semibold">
+                      Bug Records Count
+                    </p>
+                  </div>
+                  <Badge>{logbookSummary.bugCount}</Badge>
+                </section>
+                <Separator />
+                <section className="flex justify-between items-center p-2">
+                  <div className="flex items-center gap-1">
+                    <ShieldAlert className="text-gray-400 size-5" />
+                    <p className="ml-2 text-muted-foreground font-semibold">
+                      Security Records Count
+                    </p>
+                  </div>
+                  <Badge>{logbookSummary.securityCount}</Badge>
+                </section>
+                <Separator />
+                <section className="flex justify-between items-center p-2">
+                  <div className="flex items-center gap-1">
+                    <TestTubeDiagonal className="text-gray-400 size-5" />
+                    <p className="ml-2 text-muted-foreground font-semibold">
+                      Testing Records Count
+                    </p>
+                  </div>
+                  <Badge>{logbookSummary.testingCount}</Badge>
+                </section>
+                <Separator />
+                <section className="flex justify-between items-center p-2">
+                  <div className="flex items-center gap-1">
+                    <LayoutGrid className="text-gray-400 size-5" />
+                    <p className="ml-2 text-muted-foreground font-semibold">
+                      Feature Request Records Count
+                    </p>
+                  </div>
+                  <Badge>{logbookSummary.featureRequestCount}</Badge>
+                </section>
+                <Separator />
+                <section className="flex justify-between items-center p-2">
+                  <div className="flex items-center gap-1">
+                    <Gauge className="text-gray-400 size-5" />
+                    <p className="ml-2 text-muted-foreground font-semibold">
+                      Performance Records Count
+                    </p>
+                  </div>
+                  <Badge>{logbookSummary.performanceCount}</Badge>
+                </section>
+                <Separator />
+                <section className="flex justify-between items-center p-2">
+                  <div className="flex items-center gap-1">
+                    <BrushCleaning className="text-gray-400 size-5" />
+                    <p className="ml-2 text-muted-foreground font-semibold">
+                      Refactor Records Count
+                    </p>
+                  </div>
+                  <Badge>{logbookSummary.refactorCount}</Badge>
+                </section>
+                <Separator />
+                <section className="flex justify-between items-center p-2">
+                  <div className="flex items-center gap-1">
+                    <FolderCode className="text-gray-400 size-5" />
+                    <p className="ml-2 text-muted-foreground font-semibold">
+                      Architecture Records Count
+                    </p>
+                  </div>
+                  <Badge>{logbookSummary.architectureCount}</Badge>
+                </section>
+              </ScrollArea>
+            )}
           </div>
         </div>
       </div>
