@@ -99,6 +99,21 @@ const ProjectInformation = ({
     }
   };
 
+  const getLogbookRecords = async () => {
+    try {
+      const response = await axios.get(`/api/projects/logbook/${projectId}`);
+      if (response.data.success) {
+        toast.success(response.data.message);
+        console.log(response.data);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      const wrapper = error as AxiosError<{ message: string }>;
+      toast.error(wrapper.response?.data.message);
+    }
+  };
+
   const logbookForm = useForm<z.infer<typeof logbook_schema>>({
     resolver: zodResolver(logbook_schema),
     defaultValues: {
@@ -171,6 +186,7 @@ const ProjectInformation = ({
 
   useEffect(() => {
     getCollaborators();
+    getLogbookRecords();
   }, [projectId]);
 
   return (

@@ -53,3 +53,53 @@ export async function POST(
     );
   }
 }
+
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ projectId: string }> }
+) {
+  try {
+    const { projectId } = await params;
+    if (!projectId) {
+      return NextResponse.json(
+        { success: false, message: "Project Id is missing in params object!" },
+        { status: 400 }
+      );
+    }
+
+    const logbook_records = await prisma.logbook.findMany({
+      where: {
+        project_id: projectId,
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    if (logbook_records) {
+      return NextResponse.json(
+        {
+          success: true,
+          message: "Logbook records fetched",
+          logbook_records,
+        },
+        { status: 200 }
+      );
+    } else {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Logbook records not fetched",
+          logbook_records: [],
+        },
+        { status: 400 }
+      );
+    }
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json(
+      { success: false, message: "Error occurred while creating log record!" },
+      { status: 500 }
+    );
+  }
+}
