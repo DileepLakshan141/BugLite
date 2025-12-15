@@ -23,7 +23,7 @@ import { Separator } from "@/components/ui/separator";
 import {
   COLLABORATOR,
   COLLABORATOR_INVITE,
-  LOGBOOK_FORM,
+  LOGBOOK_RECORD,
 } from "@/types/data_types";
 import { Brain, Contact, Feather, Search, SearchX } from "lucide-react";
 import { use, useEffect } from "react";
@@ -50,6 +50,7 @@ import Loader from "@/components/loader/Loader";
 import CollaboratorInvite from "@/components/invite/CollaboratorInvite";
 import ContributorCard from "@/components/contributor/ContributorCard";
 import { zodResolver } from "@hookform/resolvers/zod";
+import LogRecord from "@/components/log_record/LogRecord";
 
 const ProjectInformation = ({
   params,
@@ -59,6 +60,8 @@ const ProjectInformation = ({
   const unwrapped = use(params);
   const { projectId } = unwrapped;
   const [searching, setSearching] = useState<boolean>(false);
+  const [LogbookRecrods, setLogBookRecords] = useState<LOGBOOK_RECORD[]>([]);
+  const [fetchingRecords, setFetchingRecords] = useState<boolean>(false);
   const [fetchingContributors, setFetchingContributors] =
     useState<boolean>(false);
   const [recordCreating, setRecordCreating] = useState<boolean>(false);
@@ -101,16 +104,21 @@ const ProjectInformation = ({
 
   const getLogbookRecords = async () => {
     try {
+      setFetchingRecords(true);
       const response = await axios.get(`/api/projects/logbook/${projectId}`);
       if (response.data.success) {
-        toast.success(response.data.message);
+        setLogBookRecords(response.data.logbook_records);
         console.log(response.data);
       } else {
+        setLogBookRecords([]);
         toast.error(response.data.message);
       }
     } catch (error) {
       const wrapper = error as AxiosError<{ message: string }>;
       toast.error(wrapper.response?.data.message);
+      setLogBookRecords([]);
+    } finally {
+      setFetchingRecords(false);
     }
   };
 
@@ -149,6 +157,7 @@ const ProjectInformation = ({
       if (response.data.success) {
         toast.success(response.data.message);
         logbookForm.reset();
+        getLogbookRecords();
       } else {
         toast.error(response.data.message);
       }
@@ -234,7 +243,11 @@ const ProjectInformation = ({
                             <FormItem className=" my-3">
                               <FormLabel>Category</FormLabel>
                               <FormControl>
-                                <Select {...field}>
+                                <Select
+                                  value={field.value}
+                                  onValueChange={field.onChange}
+                                  defaultValue={field.value}
+                                >
                                   <SelectTrigger className="w-full">
                                     <SelectValue placeholder="Select a category" />
                                   </SelectTrigger>
@@ -380,14 +393,30 @@ const ProjectInformation = ({
           <div className="p-2 flex flex-col justify-center items-start border rounded-lg md:row-span-2 h-[700px] md:h-auto">
             <h1 className="text-xl font-semibold ml-4">Activity Log</h1>
             <Separator className="my-2" />
-            <Placeholder
-              params={{
-                title: "No Activities Yet!",
-                description:
-                  "Be the first one to create a new activity for this project! Activity log is currently empty.",
-                Icon: Feather,
-              }}
-            />
+            {fetchingRecords ? (
+              <Loader
+                params={{
+                  support_text:
+                    "Project log records are fetching! Please Wait!",
+                  full_h: true,
+                }}
+              />
+            ) : LogbookRecrods.length < 1 ? (
+              <Placeholder
+                params={{
+                  title: "No Activities Yet!",
+                  description:
+                    "Be the first one to create a new activity for this project! Activity log is currently empty.",
+                  Icon: Feather,
+                }}
+              />
+            ) : (
+              <ScrollArea className="w-full h-full max-h-[650px] pr-5">
+                {LogbookRecrods.map((item: LOGBOOK_RECORD) => {
+                  return <LogRecord key={item.id} params={item} />;
+                })}
+              </ScrollArea>
+            )}
           </div>
           {/* project collaborators/contributors */}
           <div className="p-2 flex flex-col justify-center items-start w-full border rounded-lg h-[350px] md:col-start-2 max-w-[450px]">

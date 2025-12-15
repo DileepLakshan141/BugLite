@@ -37,3 +37,13 @@ export type COLLABORATOR_DETAILS = {
   emailVerified: boolean;
   image: string;
 };
+
+export type LOGBOOK_RECORD = {
+  id: string;
+  createdAt: Date;
+  title: string;
+  description: string;
+  category: string;
+  state: string;
+  user: COLLABORATOR_DETAILS;
+};
