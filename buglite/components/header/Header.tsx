@@ -39,6 +39,7 @@ const HeaderComponent = () => {
         onSuccess: () => {
           router.replace("/");
           clearUser();
+          console.log("user", getUser());
           toast.success("Successfully logged out!");
         },
       },

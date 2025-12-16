@@ -4,15 +4,22 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import axios, { AxiosError } from "axios";
 import useUserStore from "@/utils/zustand/store";
 import { toast } from "sonner";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Separator } from "@/components/ui/separator";
+import { INVITATION } from "@/types/data_types";
+import Loader from "@/components/loader/Loader";
+import Placeholder from "@/components/Placeholder/Placeholder";
+import { MailSearch } from "lucide-react";
 
 const MyInvitations = () => {
   const { getUser } = useUserStore();
+  const [invitations, setInvitations] = useState<INVITATION[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const user = getUser();
 
   const getAllInvitiationsForUser = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(`/api/invitations/${user?.id}`);
       if (response.data.success) {
         toast.success(response.data.message);
@@ -27,6 +34,8 @@ const MyInvitations = () => {
           "critical error occurred while fetching invitations!"
       );
       console.log(wrapper);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -40,8 +49,28 @@ const MyInvitations = () => {
         My Invitations
       </h1>
       <Separator className="my-3" />
-      <div className="w-full flex flex-col justify-start items-start mt-[90px] max-w-[1000px] p-4 ">
-        <ScrollArea className="w-full h-full max-h-[700px] pr-5"></ScrollArea>
+      <div className="w-full flex flex-col justify-start items-start max-w-[1000px] p-4 ">
+        <section className="w-full h-[700px] mx-4 flex flex-col justify-center items-center p-2 border rounded-lg md:max-w-[800px]">
+          {loading ? (
+            <Loader
+              params={{
+                support_text: "Looking for your invitations! Please Wait!",
+                full_h: true,
+              }}
+            />
+          ) : invitations.length < 1 ? (
+            <Placeholder
+              params={{
+                Icon: MailSearch,
+                title: "No Invites Found!",
+                description:
+                  "Looks like curerntly you dont have any invites. Check later for any updates.",
+              }}
+            />
+          ) : (
+            <ScrollArea className="w-full h-full max-h-[700px] pr-5"></ScrollArea>
+          )}
+        </section>
       </div>
     </div>
   );

@@ -5,6 +5,14 @@ export type PROJECT = {
   createdAt: Date;
 };
 
+export type PROJECT_ENHANCED = {
+  id: string;
+  name: string;
+  description: string;
+  createdAt: Date;
+  user: COLLABORATOR_DETAILS;
+};
+
 export type LOGBOOK_FORM = {
   project_id: string;
   category: string;
@@ -59,4 +67,12 @@ export type LOGBOOK_SUMMARY = {
   architectureCount: number;
   pendingIssues: number;
   closedIssues: number;
+};
+
+export type INVITATION = {
+  id: string;
+  project: PROJECT_ENHANCED;
+  request_accepted: boolean;
+  state: boolean;
+  createdAt: Date;
 };

@@ -20,9 +20,16 @@ export async function GET(
       where: {
         contributor_id: userId,
       },
+      include: {
+        project: {
+          include: {
+            user: true,
+          },
+        },
+      },
     });
 
-    if (!invitations) {
+    if (invitations) {
       return NextResponse.json(
         {
           success: true,
