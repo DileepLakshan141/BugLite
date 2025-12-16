@@ -23,7 +23,7 @@ const MyInvitations = () => {
       const response = await axios.get(`/api/invitations/${user?.id}`);
       if (response.data.success) {
         toast.success(response.data.message);
-        console.log(response.data);
+        setInvitations(response.data.invitations);
       } else {
         toast.error(response.data.message);
       }
@@ -68,7 +68,11 @@ const MyInvitations = () => {
               }}
             />
           ) : (
-            <ScrollArea className="w-full h-full max-h-[700px] pr-5"></ScrollArea>
+            <ScrollArea className="w-full h-full max-h-[700px] pr-5">
+              {invitations.map((invite) => {
+                return <h1 key={invite.id}>{invite.project.name}</h1>;
+              })}
+            </ScrollArea>
           )}
         </section>
       </div>
