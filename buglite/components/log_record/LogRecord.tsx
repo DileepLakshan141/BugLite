@@ -85,7 +85,7 @@ const LogRecord = ({ params }: { params: LOGBOOK_RECORD }) => {
       <Separator className="my-2" />
       <div className="flex justify-between items-center">
         <span className="text-sm italic">
-          Created on {dayjs(createdAt).format("DD MMM, YYYY")}
+          Created on {dayjs(createdAt).format("HH:mm DD MMM, YYYY")}
         </span>
         <div className="flex itmes-center">
           <span className="mr-2">Status:</span>

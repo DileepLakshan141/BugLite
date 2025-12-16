@@ -294,7 +294,6 @@ const ProjectInformation = ({
 
   return (
     <div className="w-full flex flex-col justify-start items-start">
-      <HeaderComponent />
       <div className="w-full flex flex-col justify-start items-start mt-[90px] p-4">
         <div className="w-full flex justify-center items-center gap-2 mb-4">
           <ButtonGroup>

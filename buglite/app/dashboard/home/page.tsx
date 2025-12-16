@@ -1,5 +1,4 @@
 "use client";
-import HeaderComponent from "@/components/header/Header";
 import { Button } from "@/components/ui/button";
 import {
   Empty,
@@ -22,7 +21,6 @@ import Link from "next/link";
 const HomeScreenDashboard = () => {
   return (
     <div className="w-full flex flex-col justify-start items-start">
-      <HeaderComponent />
       <div className="w-full flex flex-col justify-start items-start mt-[90px] p-4">
         <h1 className="text-2xl font-semibold">Recently Interacted Projects</h1>
         <Separator className="my-3" />
