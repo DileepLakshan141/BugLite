@@ -13,6 +13,15 @@ export type PROJECT_ENHANCED = {
   user: COLLABORATOR_DETAILS;
 };
 
+export type CONTRIBUTION = {
+  contributor_id: string;
+  id: string;
+  project_id: string;
+  request_accepted: boolean;
+  state: boolean;
+  project: PROJECT;
+};
+
 export type LOGBOOK_FORM = {
   project_id: string;
   category: string;

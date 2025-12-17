@@ -6,7 +6,9 @@ export async function GET(
   { params }: { params: { userId: string } }
 ) {
   try {
-    const { userId } = params;
+    const { userId } = await params;
+    console.log(userId);
+
     const projects = await prisma.project.findMany({
       where: {
         author: userId,
