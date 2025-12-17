@@ -75,4 +75,5 @@ export type INVITATION = {
   request_accepted: boolean;
   state: boolean;
   createdAt: Date;
+  user: COLLABORATOR_DETAILS;
 };
