@@ -8,19 +8,24 @@ import dayjs from "dayjs";
 import useUserStore from "@/utils/zustand/store";
 import axios, { AxiosError } from "axios";
 import { toast } from "sonner";
+import { useState } from "react";
 
 const InvitationCard = ({ params }: { params: INVITATION }) => {
   const { id, project, createdAt, request_accepted } = params;
   const { getUser } = useUserStore();
+  const [accepted, setAccepted] = useState<boolean>(request_accepted);
+  const [accepting, setAccepting] = useState<boolean>(false);
   const userId = getUser()?.id;
 
   const acceptInvitation = async () => {
     try {
+      setAccepting(true);
       const response = await axios.put(`/api/invitations/accept/${id}`, {
         userId,
       });
       if (response.data.success) {
         toast.success(response.data.message);
+        setAccepted(true);
       } else {
         toast.error(response.data.message);
       }
@@ -28,6 +33,8 @@ const InvitationCard = ({ params }: { params: INVITATION }) => {
       const wrapper = error as AxiosError<{ message: string }>;
       toast.error(wrapper.response?.data.message);
       console.log(wrapper);
+    } finally {
+      setAccepting(false);
     }
   };
   return (
@@ -36,7 +43,7 @@ const InvitationCard = ({ params }: { params: INVITATION }) => {
         <h1 className="capitalize text-lg font-semibold">
           New Collaboration Invite
         </h1>
-        {request_accepted ? (
+        {accepted ? (
           <Badge variant="secondary">
             {" "}
             <CheckCheck className="text-green-500" /> Accepted
@@ -63,10 +70,11 @@ const InvitationCard = ({ params }: { params: INVITATION }) => {
         </p>
         <Button
           size="sm"
-          disabled={request_accepted}
+          disabled={accepted}
           onClick={() => acceptInvitation()}
         >
-          <Hand /> {request_accepted ? "Accepted" : "Accept"}
+          <Hand />{" "}
+          {accepting ? "Accepting..." : accepted ? "Accepted" : "Accept"}
         </Button>
       </div>
     </div>
