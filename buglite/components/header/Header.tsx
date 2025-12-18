@@ -47,7 +47,7 @@ const HeaderComponent = () => {
   };
 
   return (
-    <div className="w-full h-15 absolute flex bg-white">
+    <div className="w-full h-15 absolute flex bg-white z-20">
       <div className="w-full max-w-[1300px] flex justify-between items-center mx-auto">
         {/* the logo holder */}
         <div className="w-[200px] h-full flex justify-center items-center pt-1.5">
