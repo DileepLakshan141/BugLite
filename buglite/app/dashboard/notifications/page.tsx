@@ -4,17 +4,16 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import axios, { AxiosError } from "axios";
 import useUserStore from "@/utils/zustand/store";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import { INVITATION } from "@/types/data_types";
 import Loader from "@/components/loader/Loader";
 import Placeholder from "@/components/Placeholder/Placeholder";
 import { MailSearch } from "lucide-react";
-import InvitationCard from "@/components/invitation_card/InvitationCard";
 
 const MyNotifications = () => {
   const { getUser } = useUserStore();
-  const [invitations, setInvitations] = useState<INVITATION[]>([]);
+  const [notifications, setNotifications] = useState<INVITATION[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const user = getUser();
 
@@ -23,7 +22,7 @@ const MyNotifications = () => {
       setLoading(true);
       const response = await axios.get(`/api/notifications/${user?.id}`);
       if (response.data.success) {
-        setInvitations(response.data.invitations);
+        setNotifications(response.data.invitations);
         console.log(response.data.invitations);
       } else {
         toast.error(response.data.message);
@@ -32,7 +31,7 @@ const MyNotifications = () => {
       const wrapper = error as AxiosError<{ message: string }>;
       toast.error(
         wrapper.response?.data.message ||
-          "critical error occurred while fetching invitations!"
+          "critical error occurred while fetching notifications!"
       );
       console.log(wrapper);
     } finally {
@@ -59,7 +58,7 @@ const MyNotifications = () => {
                 full_h: true,
               }}
             />
-          ) : invitations.length < 1 ? (
+          ) : notifications.length < 1 ? (
             <Placeholder
               params={{
                 Icon: MailSearch,

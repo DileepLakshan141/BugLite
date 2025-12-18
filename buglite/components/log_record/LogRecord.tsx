@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Badge } from "../ui/badge";
 import {
+  BookCheck,
   BrushCleaning,
   Bug,
   CheckCheck,
@@ -18,9 +19,25 @@ import {
   TriangleAlert,
 } from "lucide-react";
 import { Separator } from "../ui/separator";
+import { Button } from "../ui/button";
+import useUserStore from "@/utils/zustand/store";
 
 const LogRecord = ({ params }: { params: LOGBOOK_RECORD }) => {
   const { user, title, description, category, state, createdAt } = params;
+  const { getUser } = useUserStore();
+
+  const dispachMessage = async () => {};
+
+  const constructMessage = (
+    projectName: string,
+    issueName: string,
+    userName: string
+  ) => {
+    const title = `Issue closed on ${projectName}`;
+    const message = `The issue named "${issueName}" has been closed by ${userName}. You can check the log records for updated record state.`;
+    return { title, message };
+  };
+
   return (
     <div className="w-full border-black border rounded-lg p-2 my-2">
       {/* user details and category info */}
@@ -88,7 +105,6 @@ const LogRecord = ({ params }: { params: LOGBOOK_RECORD }) => {
           Created on {dayjs(createdAt).format("HH:mm DD MMM, YYYY")}
         </span>
         <div className="flex itmes-center">
-          <span className="mr-2">Status:</span>
           <Badge variant="secondary">
             {state === "pending" ? (
               <DiamondPlus className="text-red-500" />
@@ -98,6 +114,13 @@ const LogRecord = ({ params }: { params: LOGBOOK_RECORD }) => {
             {state.toUpperCase()}
           </Badge>
         </div>
+        {state === "pending" ? (
+          <Button variant="link" size="sm">
+            <BookCheck /> Close Issue
+          </Button>
+        ) : (
+          ""
+        )}
       </div>
     </div>
   );
