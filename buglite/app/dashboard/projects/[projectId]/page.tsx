@@ -108,7 +108,6 @@ const ProjectInformation = ({
 
       if (response.data.success) {
         setTargetUser(response.data.response);
-        toast.success(response.data.message);
       } else {
         toast.error(response.data.message);
         setTargetUser(null);

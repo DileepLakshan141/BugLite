@@ -23,7 +23,6 @@ const MyInvitations = () => {
       setLoading(true);
       const response = await axios.get(`/api/invitations/${user?.id}`);
       if (response.data.success) {
-        toast.success(response.data.message);
         setInvitations(response.data.invitations);
       } else {
         toast.error(response.data.message);
