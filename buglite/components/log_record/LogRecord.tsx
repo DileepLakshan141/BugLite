@@ -21,20 +21,56 @@ import {
 import { Separator } from "../ui/separator";
 import { Button } from "../ui/button";
 import useUserStore from "@/utils/zustand/store";
+import axios from "axios";
+import { AxiosError } from "axios";
+import { toast } from "sonner";
 
 const LogRecord = ({ params }: { params: LOGBOOK_RECORD }) => {
   const { user, title, description, category, state, createdAt } = params;
   const { getUser } = useUserStore();
+  const userId = getUser()?.id;
 
-  const dispachMessage = async () => {};
+  const dispachMessage = async (
+    projectName: string,
+    issueName: string,
+    userName: string,
+    issue_type: boolean
+  ) => {
+    const message_details = constructMessage(
+      projectName,
+      issueName,
+      userName,
+      issue_type
+    );
+    try {
+      const response = await axios.post("/api/notifications", {
+        title: message_details.title,
+        message: message_details.message,
+        issue_type,
+        userId,
+      });
+
+      if (response.data.success) {
+        toast.success(response.data.message);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      const wrapper = error as AxiosError<{ message: string }>;
+      toast.error(wrapper.response?.data.message);
+    }
+  };
 
   const constructMessage = (
     projectName: string,
     issueName: string,
-    userName: string
+    userName: string,
+    issue_type: boolean
   ) => {
     const title = `Issue closed on ${projectName}`;
-    const message = `The issue named "${issueName}" has been closed by ${userName}. You can check the log records for updated record state.`;
+    const message = `The issue named "${issueName}" has been ${
+      issue_type ? "closed" : "opened"
+    } by ${userName}. You can check the log records for more details of issue.`;
     return { title, message };
   };
 

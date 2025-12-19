@@ -58,7 +58,7 @@ const HomeScreenDashboard = () => {
           {/* chart container */}
           <div className="w-full p-2 flex flex-col justify-center items-center">
             <h1 className="w-full text-2xl font-semibold text-left">
-              Solved & Resolved Bugs
+              Opened & Closed Issues
             </h1>
             <Separator className="my-3" />
             <Empty>

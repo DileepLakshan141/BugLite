@@ -56,7 +56,7 @@ export async function GET(
 
 export async function POST(req: NextRequest) {
   try {
-    const { title, message, userId } = await req.json();
+    const { title, message, userId, issue_type } = await req.json();
     if (!title || !message) {
       return NextResponse.json(
         {
@@ -71,9 +71,19 @@ export async function POST(req: NextRequest) {
       data: {
         title,
         message,
+        issue_type,
         target: userId,
       },
     });
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: "Notification dispatched successfully!",
+        notification,
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.log(error);
     return NextResponse.json(

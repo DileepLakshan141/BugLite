@@ -127,6 +127,7 @@ model Notification{
   target String
   title String
   message String
+  issue_type Boolean @default(false)
   status Boolean @default(false)
   createdAt DateTime @default(now())
   receiver User @relation(fields: [target] , references: [id])
