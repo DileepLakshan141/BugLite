@@ -26,9 +26,10 @@ import { AxiosError } from "axios";
 import { toast } from "sonner";
 
 const LogRecord = ({ params }: { params: LOGBOOK_RECORD }) => {
-  const { user, title, description, category, state, createdAt } = params;
+  const { id, user, title, description, category, state, createdAt } = params;
   const { getUser } = useUserStore();
   const userId = getUser()?.id;
+  const userName = getUser()?.username || "sample";
 
   const dispachMessage = async (
     projectName: string,
@@ -74,6 +75,27 @@ const LogRecord = ({ params }: { params: LOGBOOK_RECORD }) => {
     return { title, message };
   };
 
+  const updateLogRecordState = async (
+    recordId: string,
+    projectName: string,
+    issueName: string,
+    userName: string,
+    issue_type: boolean
+  ) => {
+    try {
+      const response = await axios.put(`/api/records/${recordId}`);
+      if (response.data.success) {
+        toast.success(response.data.message);
+        await dispachMessage(projectName, issueName, userName, issue_type);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      const wrapper = error as AxiosError<{ message: string }>;
+      toast.error(wrapper.response?.data.message);
+      console.log(wrapper);
+    }
+  };
   return (
     <div className="w-full border-black border rounded-lg p-2 my-2">
       {/* user details and category info */}
@@ -151,7 +173,13 @@ const LogRecord = ({ params }: { params: LOGBOOK_RECORD }) => {
           </Badge>
         </div>
         {state === "pending" ? (
-          <Button variant="link" size="sm">
+          <Button
+            variant="link"
+            size="sm"
+            onClick={() =>
+              updateLogRecordState(id, "unknown", title, userName, true)
+            }
+          >
             <BookCheck /> Close Issue
           </Button>
         ) : (

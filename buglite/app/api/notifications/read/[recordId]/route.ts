@@ -17,36 +17,36 @@ export async function PUT(
       );
     }
 
-    const target_record = await prisma.logbook.findUnique({
+    const target_notification = await prisma.notification.findUnique({
       where: {
         id: recordId,
       },
     });
 
-    if (!target_record) {
+    if (!target_notification) {
       return NextResponse.json(
         {
           success: false,
-          message: "No log record found with provided id!",
+          message: "No notification found with provided id!",
         },
         { status: 404 }
       );
     }
 
-    const updated_record = await prisma.logbook.update({
+    const updated_notification = await prisma.notification.update({
       where: {
         id: recordId,
       },
       data: {
-        state: "closed",
+        status: true,
       },
     });
 
-    if (updated_record) {
+    if (updated_notification) {
       return NextResponse.json(
         {
           success: true,
-          message: "Record status updated! Issue closed!",
+          message: "Notification marked as read!",
         },
         { status: 200 }
       );
@@ -54,7 +54,7 @@ export async function PUT(
       return NextResponse.json(
         {
           success: false,
-          message: "Error while updating record status!",
+          message: "Error while updating notification status!",
         },
         { status: 400 }
       );
@@ -64,7 +64,7 @@ export async function PUT(
     return NextResponse.json(
       {
         success: false,
-        message: "Server side error while changing record states",
+        message: "Server side error while changing notification states",
       },
       { status: 500 }
     );
