@@ -4,7 +4,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import axios, { AxiosError } from "axios";
 import useUserStore from "@/utils/zustand/store";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Separator } from "@/components/ui/separator";
 import { INVITATION } from "@/types/data_types";
 import Loader from "@/components/loader/Loader";
@@ -22,8 +22,8 @@ const MyNotifications = () => {
       setLoading(true);
       const response = await axios.get(`/api/notifications/${user?.id}`);
       if (response.data.success) {
-        setNotifications(response.data.invitations);
-        console.log(response.data.invitations);
+        // setNotifications(response.data.invitations);
+        console.log(response.data.notifications);
       } else {
         toast.error(response.data.message);
       }
@@ -39,9 +39,9 @@ const MyNotifications = () => {
     }
   };
 
-  // useEffect(() => {
-  //   getAllNotificationsForUser();
-  // }, [user?.id]);
+  useEffect(() => {
+    getAllNotificationsForUser();
+  }, [user?.id]);
 
   return (
     <div className="w-full flex flex-col justify-center items-center pt-[90px]">
@@ -54,7 +54,7 @@ const MyNotifications = () => {
           {loading ? (
             <Loader
               params={{
-                support_text: "Looking for your invitations! Please Wait!",
+                support_text: "Checking for notifications! Please Wait!",
                 full_h: true,
               }}
             />

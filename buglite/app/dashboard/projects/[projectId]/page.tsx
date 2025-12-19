@@ -227,6 +227,52 @@ const ProjectInformation = ({
     },
   });
 
+  const dispachMessage = async (
+    projectName: string,
+    issueName: string,
+    userName: string,
+    issue_type: boolean
+  ) => {
+    const message_details = constructMessage(
+      projectName,
+      issueName,
+      userName,
+      issue_type
+    );
+    try {
+      const response = await axios.post("/api/notifications", {
+        title: message_details.title,
+        message: message_details.message,
+        issue_type,
+        userId: curr_user?.id,
+      });
+
+      if (response.data.success) {
+        toast.success(response.data.message);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      const wrapper = error as AxiosError<{ message: string }>;
+      toast.error(wrapper.response?.data.message);
+    }
+  };
+
+  const constructMessage = (
+    projectName: string,
+    issueName: string,
+    userName: string,
+    issue_type: boolean
+  ) => {
+    const title = `Issue opened on ${projectName}`;
+    const message = `The issue named "${issueName}" has been ${
+      issue_type ? "closed" : "opened"
+    } by ${userName}. You can check the log records for more details of issue.`;
+    return { title, message };
+  };
+
+  const userName = curr_user?.username || "sample";
+
   const createLogbookRecord = async (
     values: z.infer<typeof logbook_schema>
   ) => {
@@ -249,6 +295,7 @@ const ProjectInformation = ({
 
       if (response.data.success) {
         toast.success(response.data.message);
+        await dispachMessage("Unknown", title, userName, false);
         logbookForm.reset();
         getLogbookRecords();
       } else {

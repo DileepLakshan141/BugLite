@@ -1,7 +1,6 @@
 import { LINK } from "@/types/link_types";
 import {
   BellDot,
-  Bug,
   FolderGit,
   Handshake,
   LayoutDashboard,
@@ -28,11 +27,6 @@ export const link_data: LINK[] = [
     name: "My Invitations",
     link: "/dashboard/invitations",
     icon: Mail,
-  },
-  {
-    name: "Bug Details",
-    link: "/dashboard/bugs",
-    icon: Bug,
   },
   {
     name: "Notifications",

@@ -38,7 +38,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import Loader from "@/components/loader/Loader";
 import { PROJECT } from "@/types/data_types";
 import ProjectCard from "@/components/project_card/ProjectCard";
@@ -88,16 +88,14 @@ const ProjectsScreenDashboard = () => {
       try {
         setFetching(true);
         const response = await axios.get(`/api/projects/user/${userId}`);
-        console.log(response);
-
         if (response.data?.success) {
           setProjects(response.data.projects);
-          toast.success("User specific projects retrieved!");
         } else {
           toast.error(response.data.message);
         }
       } catch (error) {
-        toast.error("user specific project fetching failed");
+        const wrapper = error as AxiosError<{ message: string }>;
+        toast.error(wrapper.response?.data.message);
         console.log(error);
       } finally {
         setFetching(false);
