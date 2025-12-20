@@ -228,6 +228,7 @@ const ProjectInformation = ({
   });
 
   const dispachMessage = async (
+    user: string,
     projectName: string,
     issueName: string,
     userName: string,
@@ -244,7 +245,7 @@ const ProjectInformation = ({
         title: message_details.title,
         message: message_details.message,
         issue_type,
-        userId: curr_user?.id,
+        userId: user,
       });
 
       if (response.data.success) {
@@ -294,8 +295,17 @@ const ProjectInformation = ({
       });
 
       if (response.data.success) {
+        const record = response.data.new_record;
+        console.log("record", record);
+
         toast.success(response.data.message);
-        await dispachMessage("Unknown", title, userName, false);
+        await dispachMessage(
+          record.project.author,
+          record.project.name,
+          title,
+          userName,
+          false
+        );
         logbookForm.reset();
         getLogbookRecords();
       } else {

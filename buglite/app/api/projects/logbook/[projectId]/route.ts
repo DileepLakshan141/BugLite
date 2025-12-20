@@ -35,6 +35,9 @@ export async function POST(
         category,
         state,
       },
+      include: {
+        project: true,
+      },
     });
 
     return NextResponse.json(
@@ -73,6 +76,7 @@ export async function GET(
       },
       include: {
         user: true,
+        project: true,
       },
       orderBy: {
         createdAt: "desc",

@@ -63,6 +63,11 @@ export type LOGBOOK_RECORD = {
   category: string;
   state: string;
   user: COLLABORATOR_DETAILS;
+  project: {
+    id: string;
+    author: string;
+    name: string;
+  };
 };
 
 export type LOGBOOK_SUMMARY = {

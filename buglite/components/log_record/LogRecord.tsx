@@ -26,13 +26,16 @@ import { AxiosError } from "axios";
 import { toast } from "sonner";
 
 const LogRecord = ({ params }: { params: LOGBOOK_RECORD }) => {
-  const { id, user, title, description, category, state, createdAt } = params;
+  const { id, user, title, description, category, state, createdAt, project } =
+    params;
   const { getUser } = useUserStore();
   const userId = getUser()?.id;
   const userName = getUser()?.username || "sample";
+  console.log(project);
 
   const dispachMessage = async (
     projectName: string,
+    projectAuthor: string,
     issueName: string,
     userName: string,
     issue_type: boolean
@@ -48,7 +51,7 @@ const LogRecord = ({ params }: { params: LOGBOOK_RECORD }) => {
         title: message_details.title,
         message: message_details.message,
         issue_type,
-        userId,
+        userId: projectAuthor,
       });
 
       if (response.data.success) {
@@ -77,6 +80,7 @@ const LogRecord = ({ params }: { params: LOGBOOK_RECORD }) => {
 
   const updateLogRecordState = async (
     recordId: string,
+    projectAuthor: string,
     projectName: string,
     issueName: string,
     userName: string,
@@ -86,7 +90,13 @@ const LogRecord = ({ params }: { params: LOGBOOK_RECORD }) => {
       const response = await axios.put(`/api/records/${recordId}`);
       if (response.data.success) {
         toast.success(response.data.message);
-        await dispachMessage(projectName, issueName, userName, issue_type);
+        await dispachMessage(
+          projectName,
+          projectAuthor,
+          issueName,
+          userName,
+          issue_type
+        );
       } else {
         toast.error(response.data.message);
       }
@@ -177,7 +187,14 @@ const LogRecord = ({ params }: { params: LOGBOOK_RECORD }) => {
             variant="link"
             size="sm"
             onClick={() =>
-              updateLogRecordState(id, "unknown", title, userName, true)
+              updateLogRecordState(
+                id,
+                project.author,
+                project.name,
+                title,
+                userName,
+                true
+              )
             }
           >
             <BookCheck /> Close Issue
