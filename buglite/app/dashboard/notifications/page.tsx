@@ -6,14 +6,15 @@ import useUserStore from "@/utils/zustand/store";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { Separator } from "@/components/ui/separator";
-import { INVITATION } from "@/types/data_types";
+import { NOTIFICATION } from "@/types/data_types";
 import Loader from "@/components/loader/Loader";
 import Placeholder from "@/components/Placeholder/Placeholder";
 import { MailSearch } from "lucide-react";
+import NotificationCard from "@/components/notification/NotificationCard";
 
 const MyNotifications = () => {
   const { getUser } = useUserStore();
-  const [notifications, setNotifications] = useState<INVITATION[]>([]);
+  const [notifications, setNotifications] = useState<NOTIFICATION[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const user = getUser();
 
@@ -22,7 +23,7 @@ const MyNotifications = () => {
       setLoading(true);
       const response = await axios.get(`/api/notifications/${user?.id}`);
       if (response.data.success) {
-        // setNotifications(response.data.invitations);
+        setNotifications(response.data.notifications);
         console.log(response.data.notifications);
       } else {
         toast.error(response.data.message);
@@ -68,7 +69,11 @@ const MyNotifications = () => {
               }}
             />
           ) : (
-            <ScrollArea className="w-full h-full max-h-[700px] pr-5"></ScrollArea>
+            <ScrollArea className="w-full h-full max-h-[700px] pr-5">
+              {notifications.map((note) => {
+                return <NotificationCard params={note} key={note.id} />;
+              })}
+            </ScrollArea>
           )}
         </section>
       </div>

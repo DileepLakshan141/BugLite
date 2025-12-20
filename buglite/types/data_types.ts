@@ -91,3 +91,13 @@ export type INVITATION = {
   createdAt: Date;
   user: COLLABORATOR_DETAILS;
 };
+
+export type NOTIFICATION = {
+  id: string;
+  issue_type: boolean;
+  createdAt: Date;
+  status: boolean;
+  message: string;
+  title: string;
+  target: string;
+};
