@@ -11,10 +11,12 @@ import Loader from "@/components/loader/Loader";
 import Placeholder from "@/components/Placeholder/Placeholder";
 import { MailSearch } from "lucide-react";
 import NotificationCard from "@/components/notification/NotificationCard";
+import { Badge } from "@/components/ui/badge";
 
 const MyNotifications = () => {
   const { getUser } = useUserStore();
   const [notifications, setNotifications] = useState<NOTIFICATION[]>([]);
+  const [UnreadNotifications, setUnreadNotification] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const user = getUser();
 
@@ -24,6 +26,11 @@ const MyNotifications = () => {
       const response = await axios.get(`/api/notifications/${user?.id}`);
       if (response.data.success) {
         setNotifications(response.data.notifications);
+        response.data.notifications.forEach((item: NOTIFICATION) => {
+          if (item.status == false) {
+            setUnreadNotification((prev) => prev + 1);
+          }
+        });
         console.log(response.data.notifications);
       } else {
         toast.error(response.data.message);
@@ -46,9 +53,10 @@ const MyNotifications = () => {
 
   return (
     <div className="w-full flex flex-col justify-center items-center pt-[90px]">
-      <h1 className="text-2xl font-semibold text-left w-full pl-10">
-        My Notifications
-      </h1>
+      <div className="w-full flex justify-start gap-2 items-center">
+        <h1 className="text-2xl font-semibold pl-10">My Notifications</h1>
+        <Badge className="size-8 text-md">{UnreadNotifications}</Badge>
+      </div>
       <Separator className="my-3" />
       <div className="w-full flex flex-col justify-start items-center max-w-[1000px] p-4 ">
         <section className="w-full max-w-[600px] h-[700px] mx-4 flex flex-col justify-center items-center p-2 border rounded-lg">
