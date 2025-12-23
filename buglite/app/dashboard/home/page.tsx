@@ -9,6 +9,8 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { Separator } from "@/components/ui/separator";
+import useUserStore from "@/utils/zustand/store";
+import axios, { AxiosError } from "axios";
 import {
   BellDot,
   ChartSpline,
@@ -17,8 +19,34 @@ import {
   FolderKanban,
 } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const HomeScreenDashboard = () => {
+  const [loading, setLoading] = useState<boolean>(false);
+  const { getUser } = useUserStore();
+
+  const userId = getUser();
+
+  const fetchInsights = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`/api/insights/${userId?.id}`);
+      if (response.data.success) {
+        console.log(response.data);
+      }
+    } catch (error) {
+      const wrapper = error as AxiosError<{ message: string }>;
+      toast.error(wrapper.response?.data.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!userId) return;
+    fetchInsights();
+  }, [userId]);
   return (
     <div className="w-full flex flex-col justify-start items-start">
       <div className="w-full flex flex-col justify-start items-start mt-[90px] p-4">
