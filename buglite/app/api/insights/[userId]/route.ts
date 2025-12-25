@@ -14,7 +14,20 @@ export async function GET(
       );
     }
 
-    const issuesInsights = await prisma.$queryRaw<
+    const generateDateSeries = () => {
+      const dates = [];
+      const today = new Date();
+
+      for (let i = 4; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(today.getDate() - i);
+        dates.push(date.toISOString().split("T")[0]);
+      }
+
+      return dates;
+    };
+
+    const rawData = await prisma.$queryRaw<
       {
         date: string;
         open_count: number;
@@ -22,9 +35,9 @@ export async function GET(
       }[]
     >`
     SELECT 
-    DATE("createdAt") AS date,
-    COUNT(*) FILTER (WHERE "issue_type" = false) AS open_count,
-    COUNT(*) FILTER (WHERE "issue_type" = true) AS closed_count
+      DATE("createdAt")::text AS date,
+      COUNT(*) FILTER (WHERE "issue_type" = false) AS open_count,
+      COUNT(*) FILTER (WHERE "issue_type" = true) AS closed_count
     FROM "Notification"
     WHERE "target" = ${userId}
     AND "createdAt" >= CURRENT_DATE - INTERVAL '4 days'
@@ -32,6 +45,19 @@ export async function GET(
     ORDER BY date DESC;
     `;
 
+    const dataMap = new Map(rawData.map((item) => [item.date, item]));
+
+    const allDates = generateDateSeries();
+    const issuesInsights = allDates.map((date) => {
+      if (dataMap.has(date)) {
+        return dataMap.get(date)!;
+      }
+      return {
+        date,
+        open_count: 0,
+        closed_count: 0,
+      };
+    });
     return NextResponse.json(
       {
         success: true,

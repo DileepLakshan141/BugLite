@@ -157,7 +157,7 @@ const HomeScreenDashboard = () => {
                 </EmptyHeader>
               </Empty>
             ) : (
-              <ScrollArea className="w-full max-w-[650px] h-70 p-5">
+              <ScrollArea className="w-full max-w-[650px] h-70 px-5 py justify-self-start">
                 {notifications.map((notification: NOTIFICATION) => {
                   return (
                     <NotificationCard
