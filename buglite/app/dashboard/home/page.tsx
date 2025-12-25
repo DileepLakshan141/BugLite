@@ -19,17 +19,24 @@ import {
   FolderKanban,
 } from "lucide-react";
 import Link from "next/link";
+import NotificationCard from "@/components/notification/NotificationCard";
+import Loader from "@/components/loader/Loader";
+import { Line, LineChart, XAxis, YAxis } from "recharts";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import Loader from "@/components/loader/Loader";
-import { NOTIFICATION } from "@/types/data_types";
+import { INSIGHT, NOTIFICATION } from "@/types/data_types";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import NotificationCard from "@/components/notification/NotificationCard";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 
 const HomeScreenDashboard = () => {
   const [notificationLoading, setNotificationLoading] =
     useState<boolean>(false);
   const [insightsLoading, setInsightsLoading] = useState<boolean>(false);
+  const [insightsData, setInsightsData] = useState<INSIGHT[]>([]);
   const [notifications, setNotifications] = useState<NOTIFICATION[]>([]);
   const { getUser } = useUserStore();
 
@@ -42,6 +49,7 @@ const HomeScreenDashboard = () => {
       const response = await axios.get(`/api/insights/${userId}`);
       if (response.data.success) {
         console.log(response.data);
+        setInsightsData(response.data.issuesInsights);
       }
     } catch (error) {
       const wrapper = error as AxiosError<{ message: string }>;
@@ -115,19 +123,51 @@ const HomeScreenDashboard = () => {
               Opened & Closed Issues
             </h1>
             <Separator className="my-3" />
-            <Empty>
-              <EmptyHeader>
-                <EmptyMedia variant="icon">
-                  <ChartSpline />
-                </EmptyMedia>
-                <EmptyTitle>Insight charts not available</EmptyTitle>
-                <EmptyDescription>
-                  Currently we dont available enough data to generate the
-                  insight charts. Chart will be available once sufficient data
-                  available.
-                </EmptyDescription>
-              </EmptyHeader>
-            </Empty>
+            {insightsLoading ? (
+              <Loader
+                params={{
+                  support_text:
+                    "Fetching insights of your projects! Please wait!",
+                  full_h: true,
+                }}
+              />
+            ) : insightsData.length < 1 ? (
+              <Empty>
+                <EmptyHeader>
+                  <EmptyMedia variant="icon">
+                    <ChartSpline />
+                  </EmptyMedia>
+                  <EmptyTitle>Insight charts not available</EmptyTitle>
+                  <EmptyDescription>
+                    Currently we dont available enough data to generate the
+                    insight charts. Chart will be available once sufficient data
+                    available.
+                  </EmptyDescription>
+                </EmptyHeader>
+              </Empty>
+            ) : (
+              <ChartContainer
+                className="w-full max-w-[650px] h-70 px-5 py justify-self-start"
+                config={{
+                  desktop: {
+                    label: "Desktop",
+                    color: "#2563eb",
+                  },
+                  mobile: {
+                    label: "Mobile",
+                    color: "#60a5fa",
+                  },
+                }}
+              >
+                <LineChart data={insightsData}>
+                  <YAxis width={10} />
+                  <XAxis dataKey="date" />
+                  <Line dataKey="open_count" className="bg-amber-500" />
+                  <Line dataKey="closed_count" className="bg-orange-500" />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                </LineChart>
+              </ChartContainer>
+            )}
           </div>
           {/* notification window */}
           <div className="w-full h-[350px] p-2 flex flex-col justify-center items-center">

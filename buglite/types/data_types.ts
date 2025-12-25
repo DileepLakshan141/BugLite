@@ -101,3 +101,9 @@ export type NOTIFICATION = {
   title: string;
   target: string;
 };
+
+export type INSIGHT = {
+  date: Date;
+  open_count: number;
+  closed_count: number;
+};
