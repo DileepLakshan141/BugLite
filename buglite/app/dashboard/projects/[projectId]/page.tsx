@@ -167,18 +167,6 @@ const ProjectInformation = ({
           break;
       }
     });
-    console.log({
-      issuesCount,
-      testingCount,
-      bugCount,
-      securityCount,
-      featureRequestCount,
-      refactorCount,
-      performanceCount,
-      architectureCount,
-      pendingIssues,
-      closedIssues,
-    });
     return {
       issuesCount,
       testingCount,
@@ -296,8 +284,6 @@ const ProjectInformation = ({
 
       if (response.data.success) {
         const record = response.data.new_record;
-        console.log("record", record);
-
         toast.success(response.data.message);
         await dispachMessage(
           record.project.author,
@@ -326,8 +312,6 @@ const ProjectInformation = ({
       const response = await axios.get(
         `/api/projects/contributors/${projectId}`
       );
-      console.log(response);
-
       if (response.data.success) {
         setCollaborators(response.data.contributors);
       } else {
