@@ -26,12 +26,13 @@ const HomeScreenDashboard = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const { getUser } = useUserStore();
 
-  const userId = getUser();
+  const user = getUser();
+  const userId = user?.id;
 
   const fetchInsights = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`/api/insights/${userId?.id}`);
+      const response = await axios.get(`/api/insights/${userId}`);
       if (response.data.success) {
         console.log(response.data);
       }
@@ -43,10 +44,10 @@ const HomeScreenDashboard = () => {
     }
   };
 
-  // useEffect(() => {
-  //   if (!userId) return;
-  //   fetchInsights();
-  // }, [userId]);
+  useEffect(() => {
+    if (!userId) return;
+    fetchInsights();
+  }, [userId]);
   return (
     <div className="w-full flex flex-col justify-start items-start">
       <div className="w-full flex flex-col justify-start items-start mt-[90px] p-4">
