@@ -21,17 +21,24 @@ import {
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import Loader from "@/components/loader/Loader";
+import { NOTIFICATION } from "@/types/data_types";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import NotificationCard from "@/components/notification/NotificationCard";
 
 const HomeScreenDashboard = () => {
-  const [loading, setLoading] = useState<boolean>(false);
+  const [notificationLoading, setNotificationLoading] =
+    useState<boolean>(false);
+  const [insightsLoading, setInsightsLoading] = useState<boolean>(false);
+  const [notifications, setNotifications] = useState<NOTIFICATION[]>([]);
   const { getUser } = useUserStore();
 
   const user = getUser();
   const userId = user?.id;
 
   const fetchInsights = async () => {
-    setLoading(true);
     try {
+      setInsightsLoading(true);
       const response = await axios.get(`/api/insights/${userId}`);
       if (response.data.success) {
         console.log(response.data);
@@ -40,13 +47,31 @@ const HomeScreenDashboard = () => {
       const wrapper = error as AxiosError<{ message: string }>;
       toast.error(wrapper.response?.data.message);
     } finally {
-      setLoading(false);
+      setInsightsLoading(false);
+    }
+  };
+
+  const fetchUnreadNotifications = async () => {
+    try {
+      setNotificationLoading(true);
+      const response = await axios.get(`/api/notifications/unread/${userId}`);
+      if (response.data.success) {
+        setNotifications(response.data.unread_notifications);
+        toast.success(response.data.message);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      const wrapper = error as AxiosError<{ message: string }>;
+      toast.error(wrapper.response?.data.message);
+    } finally {
+      setNotificationLoading(false);
     }
   };
 
   useEffect(() => {
-    if (!userId) return;
     fetchInsights();
+    fetchUnreadNotifications();
   }, [userId]);
   return (
     <div className="w-full flex flex-col justify-start items-start">
@@ -85,7 +110,7 @@ const HomeScreenDashboard = () => {
         {/* second row charts and notifications */}
         <section className="w-full flex gap-1 flex-col justify-start items-start md:flex-row">
           {/* chart container */}
-          <div className="w-full p-2 flex flex-col justify-center items-center">
+          <div className="w-full h-[350px] p-2 flex flex-col justify-center items-center">
             <h1 className="w-full text-2xl font-semibold text-left">
               Opened & Closed Issues
             </h1>
@@ -105,24 +130,44 @@ const HomeScreenDashboard = () => {
             </Empty>
           </div>
           {/* notification window */}
-          <div className="w-full  p-2 flex flex-col justify-center items-center">
+          <div className="w-full h-[350px] p-2 flex flex-col justify-center items-center">
             <h1 className="w-full text-2xl font-semibold text-left">
               Notifications
             </h1>
             <Separator className="my-3" />
-            <Empty>
-              <EmptyHeader>
-                <EmptyMedia variant="icon">
-                  <BellDot />
-                </EmptyMedia>
-                <EmptyTitle>No notifications!</EmptyTitle>
-                <EmptyDescription>
-                  Currently you dont have any notifications. Check regularly for
-                  see any updates. We will notify you if any requests or tasks
-                  mentioned about you.
-                </EmptyDescription>
-              </EmptyHeader>
-            </Empty>
+            {notificationLoading ? (
+              <Loader
+                params={{
+                  full_h: true,
+                  support_text: "Looking for new notifications! Please wait!",
+                }}
+              />
+            ) : notifications.length < 1 ? (
+              <Empty>
+                <EmptyHeader>
+                  <EmptyMedia variant="icon">
+                    <BellDot />
+                  </EmptyMedia>
+                  <EmptyTitle>No new notifications!</EmptyTitle>
+                  <EmptyDescription>
+                    Currently you dont have any new notifications. Check
+                    regularly for see any updates. We will notify you if any new
+                    messages is there.
+                  </EmptyDescription>
+                </EmptyHeader>
+              </Empty>
+            ) : (
+              <ScrollArea className="w-full max-w-[650px] h-70 p-5">
+                {notifications.map((notification: NOTIFICATION) => {
+                  return (
+                    <NotificationCard
+                      params={notification}
+                      key={notification.id}
+                    />
+                  );
+                })}
+              </ScrollArea>
+            )}
           </div>
         </section>
       </div>

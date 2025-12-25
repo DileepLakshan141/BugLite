@@ -25,8 +25,8 @@ export async function GET(
     DATE("createdAt") AS date,
     COUNT(*) FILTER (WHERE "issue_type" = false) AS open_count,
     COUNT(*) FILTER (WHERE "issue_type" = true) AS closed_count
-    FROM "Nssotification"
-    WHERE "receiver" = ${userId}
+    FROM "Notification"
+    WHERE "target" = ${userId}
     AND "createdAt" >= CURRENT_DATE - INTERVAL '4 days'
     GROUP BY DATE("createdAt")
     ORDER BY date DESC;
