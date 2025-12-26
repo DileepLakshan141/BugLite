@@ -21,7 +21,7 @@ import {
 import Link from "next/link";
 import NotificationCard from "@/components/notification/NotificationCard";
 import Loader from "@/components/loader/Loader";
-import { Line, LineChart, XAxis, YAxis } from "recharts";
+import { Line, LineChart, XAxis, YAxis, Bar, BarChart, Label } from "recharts";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { INSIGHT, NOTIFICATION } from "@/types/data_types";
@@ -65,7 +65,6 @@ const HomeScreenDashboard = () => {
       const response = await axios.get(`/api/notifications/unread/${userId}`);
       if (response.data.success) {
         setNotifications(response.data.unread_notifications);
-        toast.success(response.data.message);
       } else {
         toast.error(response.data.message);
       }
@@ -147,25 +146,47 @@ const HomeScreenDashboard = () => {
               </Empty>
             ) : (
               <ChartContainer
-                className="w-full max-w-[650px] h-70 px-5 py justify-self-start"
+                className="w-full max-w-[650px] h-70 py justify-self-start"
                 config={{
-                  desktop: {
-                    label: "Desktop",
-                    color: "#2563eb",
+                  open_count: {
+                    label: "Opened Issues",
+                    color: "#f97316",
                   },
-                  mobile: {
-                    label: "Mobile",
-                    color: "#60a5fa",
+                  closed_count: {
+                    label: "Closed Issues",
+                    color: "#fb923c",
                   },
                 }}
               >
-                <LineChart data={insightsData}>
-                  <YAxis width={10} />
-                  <XAxis dataKey="date" />
-                  <Line dataKey="open_count" className="bg-amber-500" />
-                  <Line dataKey="closed_count" className="bg-orange-500" />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                </LineChart>
+                <BarChart accessibilityLayer data={insightsData}>
+                  <YAxis width={30}>
+                    <Label
+                      value="Number of Issues"
+                      angle={-90}
+                      position="insideLeft"
+                      style={{ textAnchor: "middle", fontSize: 12 }}
+                    />
+                  </YAxis>
+                  <XAxis dataKey="date">
+                    <Label
+                      value="Date"
+                      angle={0}
+                      position="insideBottom"
+                      offset={-4}
+                      style={{
+                        fontSize: 12,
+                      }}
+                    />
+                  </XAxis>
+                  <Bar dataKey="open_count" fill="#f97316" radius={4} />
+                  <Bar dataKey="closed_count" fill="#fb923c" radius={4} />
+                  <ChartTooltip
+                    cursor={false}
+                    content={
+                      <ChartTooltipContent className="pointer-events-none" />
+                    }
+                  />
+                </BarChart>
               </ChartContainer>
             )}
           </div>

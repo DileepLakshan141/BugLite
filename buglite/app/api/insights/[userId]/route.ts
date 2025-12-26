@@ -36,8 +36,8 @@ export async function GET(
     >`
     SELECT 
       DATE("createdAt")::text AS date,
-      COUNT(*) FILTER (WHERE "issue_type" = false) AS open_count,
-      COUNT(*) FILTER (WHERE "issue_type" = true) AS closed_count
+      COUNT(*) FILTER (WHERE "issue_type" = false)::int AS open_count,
+      COUNT(*) FILTER (WHERE "issue_type" = true)::int AS closed_count
     FROM "Notification"
     WHERE "target" = ${userId}
     AND "createdAt" >= CURRENT_DATE - INTERVAL '4 days'
@@ -62,13 +62,13 @@ export async function GET(
       {
         success: true,
         message: "Insights fetched successfully!",
-        issuesInsights,
+        issuesInsights: issuesInsights.reverse(),
       },
       { status: 200 }
     );
   } catch (error) {
     console.log(error);
-    NextResponse.json(
+    return NextResponse.json(
       { success: false, message: "Server side error while fetching insights!" },
       { status: 500 }
     );
