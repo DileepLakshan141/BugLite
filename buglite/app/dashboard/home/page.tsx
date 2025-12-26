@@ -83,9 +83,7 @@ const HomeScreenDashboard = () => {
   return (
     <div className="w-full flex flex-col justify-start items-start">
       <div className="w-full flex flex-col justify-start items-start mt-[90px] p-4">
-        <h1 className="text-2xl font-semibold">Recently Interacted Projects</h1>
-        <Separator className="my-3" />
-        {/* recent projects container */}
+        {/* initiative prompting container */}
         <div className="w-full flex justify-center items-center">
           <Empty>
             <EmptyHeader>
@@ -93,12 +91,13 @@ const HomeScreenDashboard = () => {
                 <FolderGit2 />
               </EmptyMedia>
               <EmptyTitle>
-                No recently created/contributed projects found!
+                Lets start to fix something or build something!
               </EmptyTitle>
               <EmptyDescription>
-                Looks like currently you have no created projects or contributed
-                projects. This section will display the infomation related to
-                your projects once they are created.
+                You can start with building a new project or contribute for
+                existing projects created by others. let your friends know you
+                can be added with your email. And you can do the same for add
+                your friends to the projects.
               </EmptyDescription>
             </EmptyHeader>
             <EmptyContent className="flex flex-row wrap-normal items-center justify-center gap-2">
@@ -119,7 +118,7 @@ const HomeScreenDashboard = () => {
           {/* chart container */}
           <div className="w-full h-[350px] p-2 flex flex-col justify-center items-center">
             <h1 className="w-full text-2xl font-semibold text-left">
-              Opened & Closed Issues
+              Issue Insights (Last 5 Days)
             </h1>
             <Separator className="my-3" />
             {insightsLoading ? (
