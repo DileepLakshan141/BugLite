@@ -60,11 +60,11 @@ const HeaderComponent = () => {
         </div>
         {/* the links holder */}
         <div className="w-full h-full justify-between items-center hidden md:flex md:max-w-[300px]">
-          <span className="text-md font-semibold cursor-pointer">Home</span>
+          {/* <span className="text-md font-semibold cursor-pointer">Home</span>
           <span className="text-md font-semibold cursor-pointer">About Us</span>
           <span className="text-md font-semibold cursor-pointer">
             Contact Us
-          </span>
+          </span> */}
         </div>
 
         {!loggedUser?.username ? (
